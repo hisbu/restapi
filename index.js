@@ -1,10 +1,27 @@
-const express = require('express')
-const path = require('path')
-const PORT = process.env.PORT || 5000
+const express = require('express') //1
+const cors = require('cors') //1
+const bodyParser = require('body-parser') //1
+const moment = require('moment')
 
-express()
-  .use(express.static(path.join(__dirname, 'public')))
-  .set('views', path.join(__dirname, 'views'))
-  .set('view engine', 'ejs')
-  .get('/', (req, res) => res.render('pages/index'))
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
+const port = process.env.PORT || 2017
+
+const app = express() //1
+
+app.use(cors()) //1 ==> agar bisa diakses dari react
+app.use(bodyParser.json()) //1 == untuk kirim json dari req.body
+app.use(bodyParser.urlencoded( {extended: false})) //1
+app.use(express.static('public')) //3 ==> 'public' berupa nama directori yang akan di publish
+
+
+app.get('/', (req, res)=>{ //1
+    res.status(200).send('<h1>API Aktif!</h1>')
+})
+
+const { postsRouter} =require('./routers') //2
+
+app.use('/post', postsRouter) //2
+
+app.listen(port, ()=> console.log(`Api aktif di port ${port}`)) //1
+
+var now = moment().format("dddd, MMMM Do YYYY, h:mm:ss a")
+console.log(now) 
